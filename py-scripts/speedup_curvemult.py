@@ -11,21 +11,21 @@
 import random
 import time
 
-from btclib.ecc.curve import secp256k1 as ec
-from btclib.curvegroup import (
+from btclib.ec.curve import secp256k1 as ec
+from btclib.ec.curve_group import (
     _mult,
-    _mult_base_3,
-    _mult_fixed_window,
-    _mult_fixed_window_cached,
-    _mult_jac,
-    _mult_mont_ladder,
+    mult_base_3,
+    mult_fixed_window,
+    mult_fixed_window_cached,
+    mult_jac,
+    mult_mont_ladder,
     cached_multiples,
     cached_multiples_fixwind,
 )
-from btclib.curvegroup2 import (
-    _mult_endomorphism_secp256k1,
-    _mult_sliding_window,
-    _mult_w_NAF,
+from btclib.ec.curve_group_2 import (
+    mult_endomorphism_secp256k1,
+    mult_sliding_window,
+    mult_w_NAF,
 )
 
 # setup
@@ -47,14 +47,14 @@ print("Benchmark completed", cached_multiples.cache_info())
 T = ec.GJ
 start = time.time()
 for q in qs:
-    T = _mult_jac(q, ec.GJ, ec) if gen_only else _mult_jac(q, T, ec)
+    T = mult_jac(q, ec.GJ, ec) if gen_only else mult_jac(q, T, ec)
 double_and_add = time.time() - start
 print(f"Double & add     : {double_and_add / benchmark:.0%}")
 
 T = ec.GJ
 start = time.time()
 for q in qs:
-    T = _mult_mont_ladder(q, ec.GJ, ec) if gen_only else _mult_mont_ladder(q, T, ec)
+    T = mult_mont_ladder(q, ec.GJ, ec) if gen_only else mult_mont_ladder(q, T, ec)
 montgomery = time.time() - start
 print(f"Montgomery ladder: {montgomery / benchmark:.0%}")
 
@@ -63,7 +63,7 @@ cached_multiples(ec.GJ, ec)
 T = ec.GJ
 start = time.time()
 for q in qs:
-    T = _mult_base_3(q, ec.GJ, ec) if gen_only else _mult_base_3(q, T, ec)
+    T = mult_base_3(q, ec.GJ, ec) if gen_only else mult_base_3(q, T, ec)
 base3 = time.time() - start
 print(f"Base 3           : {base3 / benchmark:.0%}", cached_multiples.cache_info())
 
@@ -75,9 +75,9 @@ cached = False
 start = time.time()
 for q in qs:
     T = (
-        _mult_fixed_window(q, ec.GJ, ec, w, cached)
+        mult_fixed_window(q, ec.GJ, ec, w, cached)
         if gen_only
-        else _mult_fixed_window(q, T, ec, w, cached)
+        else mult_fixed_window(q, T, ec, w, cached)
     )
 fixed_window_4 = time.time() - start
 print(
@@ -93,9 +93,9 @@ cached = False
 start = time.time()
 for q in qs:
     T = (
-        _mult_fixed_window(q, ec.GJ, ec, w, cached)
+        mult_fixed_window(q, ec.GJ, ec, w, cached)
         if gen_only
-        else _mult_fixed_window(q, T, ec, w, cached)
+        else mult_fixed_window(q, T, ec, w, cached)
     )
 fixed_window_5 = time.time() - start
 print(
@@ -111,9 +111,9 @@ cached = True
 start = time.time()
 for q in qs:
     T = (
-        _mult_fixed_window(q, ec.GJ, ec, w, cached)
+        mult_fixed_window(q, ec.GJ, ec, w, cached)
         if gen_only
-        else _mult_fixed_window(q, T, ec, w, cached)
+        else mult_fixed_window(q, T, ec, w, cached)
     )
 fixed_window_4_ca = time.time() - start
 print(
@@ -129,9 +129,9 @@ cached = True
 start = time.time()
 for q in qs:
     T = (
-        _mult_fixed_window(q, ec.GJ, ec, w, cached)
+        mult_fixed_window(q, ec.GJ, ec, w, cached)
         if gen_only
-        else _mult_fixed_window(q, T, ec, w, cached)
+        else mult_fixed_window(q, T, ec, w, cached)
     )
 fixed_window_5_ca = time.time() - start
 print(
@@ -145,9 +145,9 @@ T = ec.GJ
 start = time.time()
 for q in qs:
     T = (
-        _mult_fixed_window_cached(q, ec.GJ, ec)
+        mult_fixed_window_cached(q, ec.GJ, ec)
         if gen_only
-        else _mult_fixed_window_cached(q, T, ec)
+        else mult_fixed_window_cached(q, T, ec)
     )
 fixed_window_cached = time.time() - start
 print(
@@ -162,9 +162,9 @@ w = 4
 start = time.time()
 for q in qs:
     T = (
-        _mult_sliding_window(q, ec.GJ, ec, 5)
+        mult_sliding_window(q, ec.GJ, ec, 5)
         if gen_only
-        else _mult_sliding_window(q, T, ec, w)
+        else mult_sliding_window(q, T, ec, w)
     )
 sliding_window_4 = time.time() - start
 print(
@@ -179,9 +179,9 @@ w = 5
 start = time.time()
 for q in qs:
     T = (
-        _mult_sliding_window(q, ec.GJ, ec, 5)
+        mult_sliding_window(q, ec.GJ, ec, 5)
         if gen_only
-        else _mult_sliding_window(q, T, ec, w)
+        else mult_sliding_window(q, T, ec, w)
     )
 sliding_window_5 = time.time() - start
 print(
@@ -195,7 +195,7 @@ T = ec.GJ
 w = 4
 start = time.time()
 for q in qs:
-    T = _mult_w_NAF(q, ec.GJ, ec, 4) if gen_only else _mult_w_NAF(q, T, ec, w)
+    T = mult_w_NAF(q, ec.GJ, ec, 4) if gen_only else _mult_w_NAF(q, T, ec, w)
 wNAF_4 = time.time() - start
 print(f"wNAF 4           : {wNAF_4 / benchmark:.0%}", cached_multiples.cache_info())
 
@@ -205,7 +205,7 @@ T = ec.GJ
 w = 5
 start = time.time()
 for q in qs:
-    T = _mult_w_NAF(q, ec.GJ, ec, 4) if gen_only else _mult_w_NAF(q, T, ec, w)
+    T = mult_w_NAF(q, ec.GJ, ec, 4) if gen_only else mult_w_NAF(q, T, ec, w)
 wNAF_5 = time.time() - start
 print(f"wNAF 5           : {wNAF_5 / benchmark:.0%}", cached_multiples.cache_info())
 
@@ -214,7 +214,7 @@ T = ec.GJ
 start = time.time()
 for q in qs:
     T = (
-        _mult_endomorphism_secp256k1(q, ec.GJ, ec)
+        mult_endomorphism_secp256k1(q, ec.GJ, ec)
         if gen_only
         else _mult_endomorphism_secp256k1(q, T, ec)
     )
